@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ChatMessage } from './ChatInterface';
 import { cn } from '@/lib/utils';
+import { FileText } from 'lucide-react';
 
 interface MessageProps {
   message: ChatMessage;
@@ -57,6 +58,36 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(
               >
                 {message.content}
               </ReactMarkdown>
+            </div>
+          )}
+          
+          {/* Source References - only for bot messages */}
+          {!message.isUser && message.sources && message.sources.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-muted/30">
+              <div className="flex items-center gap-2 mb-2">
+                <FileText className="w-4 h-4 text-muted-foreground" />
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                  Source References
+                </span>
+              </div>
+              <div className="space-y-2">
+                {message.sources.map((source, index) => (
+                  <div
+                    key={index}
+                    className="bg-muted/30 rounded-lg p-3 border border-muted/50"
+                  >
+                    <div className="font-medium text-xs text-foreground/90 mb-1">
+                      {source.title}
+                    </div>
+                    <div className="text-xs text-muted-foreground font-mono mb-1">
+                      {source.path}
+                    </div>
+                    <div className="text-xs text-muted-foreground/80">
+                      {source.excerpt}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
           <div className="flex justify-end mt-1">

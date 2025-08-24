@@ -9,13 +9,18 @@ export interface ChatMessage {
   content: string;
   isUser: boolean;
   timestamp: Date;
+  sources?: Array<{
+    title: string;
+    path: string;
+    excerpt: string;
+  }>;
 }
 
 export const ChatInterface = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      content: 'Hello! I\'m your **Procedures Assistant**. I can help you with:\n\n• Process documentation\n• Step-by-step guides\n• Troubleshooting procedures\n• Best practices\n\nHow can I assist you today?',
+      content: 'Hello! I\'m **ChatBW**, your internal company assistant. I\'m here to help Level 1 support staff quickly find and follow documented procedures.\n\n**I can help you with:**\n• Troubleshooting steps and runbooks\n• Operational procedures and processes\n• Company policies and guidelines\n• Step-by-step technical documentation\n\nJust ask me any "how-to" question about our internal processes, and I\'ll search our knowledge base to provide you with the exact procedures you need.',
       isUser: false,
       timestamp: new Date(),
     },
@@ -45,16 +50,28 @@ export const ChatInterface = () => {
     setMessages(prev => [...prev, newMessage]);
     setInputValue('');
 
-    // Simulate bot response
+    // Simulate bot response with source references
     setTimeout(() => {
       const botResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: `I understand you need help with: "${inputValue}"\n\nLet me provide you with a detailed procedure:\n\n1. **Initial Assessment**\n   - Review the current situation\n   - Identify key requirements\n\n2. **Planning Phase**\n   - Define clear objectives\n   - Set realistic timelines\n\n3. **Implementation**\n   - Follow best practices\n   - Monitor progress regularly\n\nWould you like me to elaborate on any of these steps?`,
+        content: `Based on your query about "${inputValue}", here's the relevant procedure:\n\n## **Step-by-Step Process**\n\n1. **Initial Verification**\n   - Check system status in the monitoring dashboard\n   - Verify user permissions and access levels\n   - \`Log into admin panel > User Management\`\n\n2. **Diagnostic Steps**\n   - Run the standard diagnostic script: \`./scripts/diagnose.sh\`\n   - Review error logs in \`/var/log/application/\`\n   - Document findings in the ticket system\n\n3. **Resolution Protocol**\n   - Apply the appropriate fix based on error type\n   - Test the solution in staging environment\n   - Update documentation if new steps were required\n\n**⚠️ Important:** Always follow the escalation matrix if the issue persists after initial troubleshooting.`,
         isUser: false,
         timestamp: new Date(),
+        sources: [
+          {
+            title: "Level 1 Support Troubleshooting Guide",
+            path: "/docs/support/level1-troubleshooting.md",
+            excerpt: "Initial verification steps for user access issues and system diagnostics..."
+          },
+          {
+            title: "Escalation Procedures Manual",
+            path: "/docs/processes/escalation-matrix.md",
+            excerpt: "When to escalate tickets and how to properly document findings..."
+          }
+        ]
       };
       setMessages(prev => [...prev, botResponse]);
-    }, 1000);
+    }, 1500);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -72,8 +89,8 @@ export const ChatInterface = () => {
           <MessageCircle className="w-6 h-6 text-primary" />
         </div>
         <div>
-          <h1 className="text-lg font-semibold text-foreground">Procedures Assistant</h1>
-          <p className="text-sm text-muted-foreground">AI-powered process guidance</p>
+          <h1 className="text-lg font-semibold text-foreground">ChatBW</h1>
+          <p className="text-sm text-muted-foreground">Internal Company Assistant</p>
         </div>
       </header>
 
@@ -93,7 +110,7 @@ export const ChatInterface = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
+            placeholder="Ask me about procedures, troubleshooting, or company processes..."
             className="flex-1 rounded-full bg-muted/50 border-muted focus:bg-background transition-colors"
           />
           <Button
