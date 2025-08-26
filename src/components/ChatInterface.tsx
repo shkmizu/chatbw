@@ -95,16 +95,18 @@ export const ChatInterface = () => {
       </header>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto chat-scroll p-4 space-y-4">
-        {messages.map(message => (
-          <Message key={message.id} message={message} />
-        ))}
-        <div ref={messagesEndRef} />
+      <div className="flex-1 overflow-y-auto chat-scroll p-4">
+        <div className="max-w-3xl mx-auto space-y-4">
+          {messages.map(message => (
+            <Message key={message.id} message={message} />
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
       </div>
 
       {/* Input Area */}
       <div className="p-4 border-t bg-card chat-input-shadow">
-        <div className="flex gap-2 max-w-4xl mx-auto">
+        <div className="flex gap-2 max-w-3xl mx-auto">
           <Input
             ref={inputRef}
             value={inputValue}
