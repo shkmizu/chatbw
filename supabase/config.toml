@@ -1,1 +1,5 @@
 project_id = "ysgajjwfejqjilninqhp"
+
+[functions]
+[functions.chat-webhook]
+verify_jwt = false

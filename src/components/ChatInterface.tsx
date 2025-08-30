@@ -3,6 +3,7 @@ import { Send, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Message } from './Message';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ChatMessage {
   id: string;
@@ -37,12 +38,13 @@ export const ChatInterface = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
+    const userMessage = inputValue;
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
-      content: inputValue,
+      content: userMessage,
       isUser: true,
       timestamp: new Date(),
     };
@@ -50,28 +52,41 @@ export const ChatInterface = () => {
     setMessages(prev => [...prev, newMessage]);
     setInputValue('');
 
-    // Simulate bot response with source references
-    setTimeout(() => {
+    try {
+      // Call the edge function to send message to webhook
+      const { data, error } = await supabase.functions.invoke('chat-webhook', {
+        body: {
+          message: userMessage,
+          userId: 'user-' + Date.now(), // Simple user ID for now
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Create bot response from webhook response
       const botResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: `Com base na sua consulta sobre "${inputValue}", aqui está o procedimento relevante:\n\n## **Processo Passo a Passo**\n\n1. **Verificação Inicial**\n   - Verificar status do sistema no painel de monitoramento\n   - Verificar permissões e níveis de acesso do usuário\n   - \`Entrar no painel administrativo > Gerenciamento de Usuários\`\n\n2. **Etapas de Diagnóstico**\n   - Executar o script de diagnóstico padrão: \`./scripts/diagnose.sh\`\n   - Revisar logs de erro em \`/var/log/application/\`\n   - Documentar descobertas no sistema de tickets\n\n3. **Protocolo de Resolução**\n   - Aplicar a correção apropriada baseada no tipo de erro\n   - Testar a solução no ambiente de teste\n   - Atualizar documentação se novos passos foram necessários\n\n**⚠️ Importante:** Sempre siga a matriz de escalação se o problema persistir após a solução inicial de problemas.`,
+        content: data.response || 'Resposta não disponível',
         isUser: false,
         timestamp: new Date(),
-        sources: [
-          {
-            title: "Guia de Solução de Problemas Suporte Nível 1",
-            path: "/docs/support/level1-troubleshooting.md",
-            excerpt: "Etapas de verificação inicial para problemas de acesso do usuário e diagnósticos do sistema..."
-          },
-          {
-            title: "Manual de Procedimentos de Escalação",
-            path: "/docs/processes/escalation-matrix.md",
-            excerpt: "Quando escalar tickets e como documentar adequadamente as descobertas..."
-          }
-        ]
       };
+
       setMessages(prev => [...prev, botResponse]);
-    }, 1500);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      
+      // Show error message to user
+      const errorResponse: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Tente novamente.',
+        isUser: false,
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, errorResponse]);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
