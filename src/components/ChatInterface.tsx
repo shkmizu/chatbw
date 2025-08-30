@@ -53,8 +53,8 @@ export const ChatInterface = () => {
     setInputValue('');
 
     try {
-      // Call the edge function to send message to webhook
-      const { data, error } = await supabase.functions.invoke('chat-webhook', {
+      // Call the Gemini edge function for RAG-based responses
+      const { data, error } = await supabase.functions.invoke('chat-gemini', {
         body: {
           message: userMessage,
           userId: 'user-' + Date.now(), // Simple user ID for now
@@ -65,12 +65,13 @@ export const ChatInterface = () => {
         throw error;
       }
 
-      // Create bot response from webhook response
+      // Create bot response from Gemini with sources
       const botResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
         content: data.response || 'Resposta não disponível',
         isUser: false,
         timestamp: new Date(),
+        sources: data.sources || []
       };
 
       setMessages(prev => [...prev, botResponse]);
