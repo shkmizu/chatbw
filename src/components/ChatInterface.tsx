@@ -20,7 +20,7 @@ export const ChatInterface = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      content: 'Hello! I\'m **ChatBW**, your internal company assistant. I\'m here to help Level 1 support staff quickly find and follow documented procedures.\n\n**I can help you with:**\n• Troubleshooting steps and runbooks\n• Operational procedures and processes\n• Company policies and guidelines\n• Step-by-step technical documentation\n\nJust ask me any "how-to" question about our internal processes, and I\'ll search our knowledge base to provide you with the exact procedures you need.',
+      content: 'Olá! Eu sou o **ChatBW**, seu assistente interno da empresa. Estou aqui para ajudar a equipe de suporte Nível 1 a encontrar rapidamente e seguir procedimentos documentados.\n\n**Posso ajudá-lo com:**\n• Etapas de solução de problemas e runbooks\n• Procedimentos operacionais e processos\n• Políticas e diretrizes da empresa\n• Documentação técnica passo a passo\n\nApenas me faça qualquer pergunta "como fazer" sobre nossos processos internos, e eu pesquisarei nossa base de conhecimento para fornecer os procedimentos exatos que você precisa.',
       isUser: false,
       timestamp: new Date(),
     },
@@ -54,19 +54,19 @@ export const ChatInterface = () => {
     setTimeout(() => {
       const botResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: `Based on your query about "${inputValue}", here's the relevant procedure:\n\n## **Step-by-Step Process**\n\n1. **Initial Verification**\n   - Check system status in the monitoring dashboard\n   - Verify user permissions and access levels\n   - \`Log into admin panel > User Management\`\n\n2. **Diagnostic Steps**\n   - Run the standard diagnostic script: \`./scripts/diagnose.sh\`\n   - Review error logs in \`/var/log/application/\`\n   - Document findings in the ticket system\n\n3. **Resolution Protocol**\n   - Apply the appropriate fix based on error type\n   - Test the solution in staging environment\n   - Update documentation if new steps were required\n\n**⚠️ Important:** Always follow the escalation matrix if the issue persists after initial troubleshooting.`,
+        content: `Com base na sua consulta sobre "${inputValue}", aqui está o procedimento relevante:\n\n## **Processo Passo a Passo**\n\n1. **Verificação Inicial**\n   - Verificar status do sistema no painel de monitoramento\n   - Verificar permissões e níveis de acesso do usuário\n   - \`Entrar no painel administrativo > Gerenciamento de Usuários\`\n\n2. **Etapas de Diagnóstico**\n   - Executar o script de diagnóstico padrão: \`./scripts/diagnose.sh\`\n   - Revisar logs de erro em \`/var/log/application/\`\n   - Documentar descobertas no sistema de tickets\n\n3. **Protocolo de Resolução**\n   - Aplicar a correção apropriada baseada no tipo de erro\n   - Testar a solução no ambiente de teste\n   - Atualizar documentação se novos passos foram necessários\n\n**⚠️ Importante:** Sempre siga a matriz de escalação se o problema persistir após a solução inicial de problemas.`,
         isUser: false,
         timestamp: new Date(),
         sources: [
           {
-            title: "Level 1 Support Troubleshooting Guide",
+            title: "Guia de Solução de Problemas Suporte Nível 1",
             path: "/docs/support/level1-troubleshooting.md",
-            excerpt: "Initial verification steps for user access issues and system diagnostics..."
+            excerpt: "Etapas de verificação inicial para problemas de acesso do usuário e diagnósticos do sistema..."
           },
           {
-            title: "Escalation Procedures Manual",
+            title: "Manual de Procedimentos de Escalação",
             path: "/docs/processes/escalation-matrix.md",
-            excerpt: "When to escalate tickets and how to properly document findings..."
+            excerpt: "Quando escalar tickets e como documentar adequadamente as descobertas..."
           }
         ]
       };
@@ -90,7 +90,7 @@ export const ChatInterface = () => {
         </div>
         <div>
           <h1 className="text-lg font-semibold text-foreground">ChatBW</h1>
-          <p className="text-sm text-muted-foreground">Internal Company Assistant</p>
+          <p className="text-sm text-muted-foreground">Assistente Interno da Empresa</p>
         </div>
       </header>
 
@@ -112,7 +112,7 @@ export const ChatInterface = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Ask me about procedures, troubleshooting, or company processes..."
+            placeholder="Pergunte-me sobre procedimentos, solução de problemas ou processos da empresa..."
             className="flex-1 rounded-full bg-muted/50 border-muted focus:bg-background transition-colors"
           />
           <Button
