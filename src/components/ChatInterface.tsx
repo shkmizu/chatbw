@@ -3,6 +3,8 @@ import { Send, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Message } from './Message';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ChatMessage {
   id: string;
@@ -17,10 +19,11 @@ export interface ChatMessage {
 }
 
 export const ChatInterface = () => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      content: 'Olá! Digite qualquer mensagem e ela será enviada para o webhook configurado.',
+      content: 'Olá! Eu sou o **ChatBW**, seu assistente interno da empresa. Estou aqui para ajudar a equipe de suporte Nível 1 a encontrar rapidamente e seguir procedimentos documentados.\n\n**Posso ajudá-lo com:**\n• Etapas de solução de problemas e runbooks\n• Procedimentos operacionais e processos\n• Políticas e diretrizes da empresa\n• Documentação técnica passo a passo\n\nApenas me faça qualquer pergunta "como fazer" sobre nossos processos internos, e eu pesquisarei nossa base de conhecimento para fornecer os procedimentos exatos que você precisa.',
       isUser: false,
       timestamp: new Date(),
     },
@@ -52,41 +55,35 @@ export const ChatInterface = () => {
     setInputValue('');
 
     try {
-      // Send directly to webhook
-      const webhookUrl = 'http://localhost:5678/webhook-test/b6115aca-da93-45e1-9ed8-277a09c92a97';
-      
-      const response = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      // Call the webhook edge function
+      const { data, error } = await supabase.functions.invoke('chat-webhook', {
+        body: {
           message: userMessage,
-        }),
+          userId: user?.id || 'anonymous',
+        }
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+      if (error) {
+        throw error;
       }
 
-      const responseText = await response.text();
-      
-      // Create bot response with exact webhook response
+      // Create bot response from Gemini with sources
       const botResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: responseText || 'Webhook não retornou resposta',
+        content: data.response || 'Resposta não disponível',
         isUser: false,
         timestamp: new Date(),
+        sources: data.sources || []
       };
 
       setMessages(prev => [...prev, botResponse]);
     } catch (error) {
-      console.error('Webhook error:', error);
+      console.error('Error sending message:', error);
       
-      // Show specific error message
+      // Show error message to user
       const errorResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: 'Webhook not reachable or returned invalid JSON',
+        content: 'Desculpe, ocorreu um erro ao processar sua mensagem. Tente novamente.',
         isUser: false,
         timestamp: new Date(),
       };
@@ -133,7 +130,7 @@ export const ChatInterface = () => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Digite sua mensagem..."
+            placeholder="Pergunte-me sobre procedimentos, solução de problemas ou processos da empresa..."
             className="flex-1 rounded-full bg-muted/50 border-muted focus:bg-background transition-colors"
           />
           <Button
