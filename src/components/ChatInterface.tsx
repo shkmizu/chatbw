@@ -3,6 +3,7 @@ import { Send, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Message } from './Message';
+import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface ChatMessage {
@@ -18,6 +19,7 @@ export interface ChatMessage {
 }
 
 export const ChatInterface = () => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
@@ -57,7 +59,7 @@ export const ChatInterface = () => {
       const { data, error } = await supabase.functions.invoke('chat-webhook', {
         body: {
           message: userMessage,
-          userId: 'user-' + Date.now(), // Simple user ID for now
+          userId: user?.id || 'anonymous',
         }
       });
 
