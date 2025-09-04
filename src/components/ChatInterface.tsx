@@ -71,11 +71,19 @@ export const ChatInterface = () => {
 
       const responseText = await response.text();
       
-      // Try to parse JSON and extract output field
+      // Try to parse JSON and extract output field from array
       let content = responseText;
       try {
         const jsonResponse = JSON.parse(responseText);
-        content = jsonResponse.output || responseText;
+        // Expect array format: [{ "output": "string" }]
+        if (Array.isArray(jsonResponse) && jsonResponse.length > 0 && jsonResponse[0].output) {
+          content = jsonResponse[0].output;
+        } else if (jsonResponse.output) {
+          // Fallback for single object format
+          content = jsonResponse.output;
+        } else {
+          content = responseText;
+        }
       } catch {
         // If not valid JSON, use the raw response
         content = responseText;
