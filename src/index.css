@@ -18,11 +18,11 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 214 21% 20%;
 
-    /* Purple gradient for user messages */
-    --primary: 270 95% 75%;
+    /* Purple theme #1A0047 */
+    --primary: 275 100% 14%;
     --primary-foreground: 0 0% 100%;
-    --primary-start: 270 95% 75%;
-    --primary-end: 300 85% 70%;
+    --primary-start: 275 100% 14%;
+    --primary-end: 275 100% 20%;
 
     /* Light gray for bot messages */
     --secondary: 214 32% 91%;
@@ -39,7 +39,7 @@ All colors MUST be HSL.
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 270 95% 75%;
+    --ring: 275 100% 14%;
 
     --radius: 0.75rem;
 
@@ -69,10 +69,10 @@ All colors MUST be HSL.
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 270 95% 75%;
+    --primary: 275 100% 14%;
     --primary-foreground: 0 0% 100%;
-    --primary-start: 270 95% 75%;
-    --primary-end: 300 85% 70%;
+    --primary-start: 275 100% 14%;
+    --primary-end: 275 100% 20%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;

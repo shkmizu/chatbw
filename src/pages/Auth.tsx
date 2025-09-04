@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, ArrowLeft } from "lucide-react";
 
-const SITE_ACCESS_PASSWORD = "admin123"; // In production, this should be configurable
+const SITE_ACCESS_PASSWORD = "BW123!@#";
 
 export default function Auth() {
   const [password, setPassword] = useState("");

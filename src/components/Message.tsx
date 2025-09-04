@@ -41,6 +41,7 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(
                   ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
                   li: ({ children }) => <li className="text-sm">{children}</li>,
                   strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                  em: ({ children }) => <em className="italic">{children}</em>,
                   code: ({ children }) => (
                     <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
                       {children}
@@ -54,9 +55,14 @@ export const Message = forwardRef<HTMLDivElement, MessageProps>(
                   h1: ({ children }) => <h1 className="text-lg font-semibold mb-2">{children}</h1>,
                   h2: ({ children }) => <h2 className="text-base font-semibold mb-2">{children}</h2>,
                   h3: ({ children }) => <h3 className="text-sm font-semibold mb-1">{children}</h3>,
+                  a: ({ children, href }) => (
+                    <a href={href} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                      {children}
+                    </a>
+                  ),
                 }}
               >
-                {message.content}
+                {message.content.replace(/\n/g, '\n\n')}
               </ReactMarkdown>
             </div>
           )}

@@ -20,7 +20,7 @@ export const ChatInterface = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      content: 'Olá! Digite qualquer mensagem e ela será enviada para o webhook configurado.',
+      content: 'Olá! Sou o ChatBW. Digite sua dúvida e eu buscarei a instrução correta para você.',
       isUser: false,
       timestamp: new Date(),
     },
@@ -71,10 +71,20 @@ export const ChatInterface = () => {
 
       const responseText = await response.text();
       
-      // Create bot response with exact webhook response
+      // Try to parse JSON and extract output field
+      let content = responseText;
+      try {
+        const jsonResponse = JSON.parse(responseText);
+        content = jsonResponse.output || responseText;
+      } catch {
+        // If not valid JSON, use the raw response
+        content = responseText;
+      }
+      
+      // Create bot response with extracted content
       const botResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: responseText || 'Webhook não retornou resposta',
+        content: content || 'Webhook não retornou resposta',
         isUser: false,
         timestamp: new Date(),
       };
@@ -83,10 +93,10 @@ export const ChatInterface = () => {
     } catch (error) {
       console.error('Webhook error:', error);
       
-      // Show specific error message
+      // Show friendly error message
       const errorResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: 'Webhook not reachable or returned invalid JSON',
+        content: 'Não consegui buscar a resposta agora. Tente novamente.',
         isUser: false,
         timestamp: new Date(),
       };
@@ -102,14 +112,18 @@ export const ChatInterface = () => {
     }
   };
 
+  const handleSuggestionClick = (suggestion: string) => {
+    setInputValue(suggestion);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <header className="flex items-center gap-3 p-4 border-b bg-card shadow-sm">
+      <header className="flex items-center justify-center gap-3 p-4 border-b bg-card shadow-sm">
         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10">
           <MessageCircle className="w-6 h-6 text-primary" />
         </div>
-        <div>
+        <div className="text-center">
           <h1 className="text-lg font-semibold text-foreground">ChatBW</h1>
           <p className="text-sm text-muted-foreground">Assistente Interno da Empresa</p>
         </div>
@@ -117,7 +131,7 @@ export const ChatInterface = () => {
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto chat-scroll p-4">
-        <div className="max-w-3xl mx-auto space-y-4">
+        <div className="max-w-[800px] mx-auto space-y-4">
           {messages.map(message => (
             <Message key={message.id} message={message} />
           ))}
@@ -127,23 +141,43 @@ export const ChatInterface = () => {
 
       {/* Input Area */}
       <div className="p-4 border-t bg-card chat-input-shadow">
-        <div className="flex gap-2 max-w-3xl mx-auto">
-          <Input
-            ref={inputRef}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Digite sua mensagem..."
-            className="flex-1 rounded-full bg-muted/50 border-muted focus:bg-background transition-colors"
-          />
-          <Button
-            onClick={handleSendMessage}
-            size="icon"
-            className="rounded-full chat-user-message hover:opacity-90 transition-opacity"
-            disabled={!inputValue.trim()}
-          >
-            <Send className="w-4 h-4" />
-          </Button>
+        <div className="max-w-[800px] mx-auto space-y-3">
+          {/* Suggestion buttons - only show when there are no user messages */}
+          {messages.length === 1 && (
+            <div className="flex flex-wrap gap-2 justify-center">
+              {['Processos Diários N1', 'Encaminhamento de Alertas', 'Tickets Datadog'].map((suggestion) => (
+                <Button
+                  key={suggestion}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="text-xs px-3 py-1 h-8 rounded-full border-primary/20 hover:border-primary/40 hover:bg-primary/5"
+                >
+                  {suggestion}
+                </Button>
+              ))}
+            </div>
+          )}
+          
+          {/* Input row */}
+          <div className="flex gap-2">
+            <Input
+              ref={inputRef}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Digite sua mensagem..."
+              className="flex-1 rounded-full bg-muted/50 border-muted focus:bg-background transition-colors"
+            />
+            <Button
+              onClick={handleSendMessage}
+              size="icon"
+              className="rounded-full chat-user-message hover:opacity-90 transition-opacity"
+              disabled={!inputValue.trim()}
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
